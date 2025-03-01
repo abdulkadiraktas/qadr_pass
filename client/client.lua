@@ -2,7 +2,6 @@ RegisterCommand("showBattlePassAdmin", function(src,args,raw)
     TriggerServerEvent('battlepass:requestData')
 end, true)
 RegisterCommand('setBattlePass', function(source, args, rawCommand)
-    print("aAA")
     TriggerServerEvent("battlepass:getActiveBattlePass")    
 end)
 
@@ -15,10 +14,10 @@ RegisterNetEvent('battlepass:activeData', function(activeBattlePass)
 
         -- activeBattlePass'ten gelen verileri kullanarak seasonData tablosunu oluşturuyoruz:
         local seasonData = {
-            seasonPassowned = false,
+            seasonPassowned = activeBattlePass?.user?.seasonPassOwned or false,
             passName = activeBattlePass.info.name or "The Halloween Pass 2",
             infoScreen = {
-                buyPromptEnabled = true,
+                buyPromptEnabled = not activeBattlePass?.user?.seasonPassOwned,
                 buyPromptText = activeBattlePass.details.buy_prompt_text or "Prompt Text",
                 page = 0,
                 background = {
@@ -36,29 +35,29 @@ RegisterNetEvent('battlepass:activeData', function(activeBattlePass)
                 body = {
                     title = activeBattlePass.details.body_title or "Bodys Title",
                     line1 = activeBattlePass.details.body_line1 or "First Line qadr_ui",
-                    line2 = activeBattlePass.details.body_line2 or [[Second Line qadr_ui
-        Second Line qadr_ui
-        Second Line qadr_ui
-        Second Line qadr_ui
-        Second Line qadr_ui]]
+                    line2 = activeBattlePass.details.body_line2 or "Second Line qadr_ui",
                 }
             },
             progressPageData = {
                 tileTextureDict = activeBattlePass.details.progress_tile_texture_dict or "pm_tiles_progress_mp",
                 tileTexture = activeBattlePass.details.progress_tile_texture or "prog_mp_02_quickdraw",
-                enabled = activeBattlePass.details.progress_enabled or true,
-                tileOverlayVisible = activeBattlePass.details.progress_tile_overlay_visible or true,
-                rankTextColor = activeBattlePass.details.progress_rank_text_color or "COLOR_VIP",
-                seasonPromptEnabled = true,
+                enabled = activeBattlePass.details.progress_enabled or false,
+                tileOverlayVisible = activeBattlePass?.user?.seasonPassOwned or false,
+
+                --rankTextColor = activeBattlePass.details.progress_rank_text_color or "COLOR_VIP",
+                -- activeBattlePass?.user?.seasonPassOwned bu true ise "COLOR_VIP" değilse "COLOR_WHITE" olacak
+                rankTextColor = activeBattlePass?.user?.season
+                    and activeBattlePass.details.progress_rank_text_color or "COLOR_VIP",
+                seasonPromptEnabled = true, -- Eğer active pass yoksa false olcak sonra yapıcam
                 seasonToolTipText = activeBattlePass.details.progress_season_tool_tip_text or "Tooltip Text",
                 largeTextureAlpha = activeBattlePass.details.progress_large_texture_alpha or 255,
                 largeTextureName = "upgrade_camp_flag_brand_lcola_default_00",
                 largeTextureTxd = "upgrade_camp_flag_brand_lcola_default_00"
             },
             playerData = {
-                rank = 6,  -- Eğer activeBattlePass.playerData yoksa varsayılan değer
-                xp = 60,
-                xpmax = 100,
+                rank = activeBattlePass?.user?.rank or 0,  -- Eğer activeBattlePass.playerData yoksa varsayılan değer
+                xp = activeBattlePass?.user?.xp or 0,
+                xpmax = activeBattlePass?.user?.xpmax or 0,
             },
             items = {
                 vipItem = {},
@@ -89,16 +88,10 @@ RegisterNetEvent('battlepass:activeData', function(activeBattlePass)
         exports["qadr_ui"]:seasonrewards(seasonData)
         -- Burada UI güncellemesi ya da diğer işlemleri gerçekleştirebilirsiniz.
     else
+        exports["qadr_ui"]:seasonrewards()
         print("Aktif battle pass bulunamadı!")
     end
 end)
-
-
--- Client tarafında veriyi sunucudan çekmek için
-Citizen.CreateThread(function()
-    
-end)
-
 -- Sunucudan veri geldiğinde yakalayalım
 RegisterNetEvent('battlepass:sendData')
 AddEventHandler('battlepass:sendData', function(data)
