@@ -25,14 +25,14 @@ https://www.youtube.com/watch?v=LxdI-Ez4pVE&list=PLchFjqoahGcmI997Gtbue4o6GhGtPr
 
 ## Screenshots
 
-![Pass Creator General](.gitimages\pass_creator_general.png)
+![Pass Creator General](.gitimages/pass_creator_general.png)
 
-![Pass Creator Item Reward](.gitimages\pass_creator_item_reward.png)
+![Pass Creator Item Reward](.gitimages/pass_creator_item_reward.png)
 
-![Pass Creator Visual Settings](.gitimages\pass_creator_visual_settings.png)
+![Pass Creator Visual Settings](.gitimages/pass_creator_visual_settings.png)
 
-![Pass Detail Page](.gitimages\pass_detail_page.png)
+![Pass Detail Page](.gitimages/pass_detail_page.png)
 
-![Pass History](.gitimages\pass_history.png)
+![Pass History](.gitimages/pass_history.png)
 
 
