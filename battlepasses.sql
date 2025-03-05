@@ -47,7 +47,35 @@ CREATE TABLE `battle_pass_items` (
 	`description` TEXT NULL DEFAULT NULL COLLATE 'armscii8_bin',
 	`rank` INT(10) NULL DEFAULT NULL,
 	`owned` TINYINT(1) NULL DEFAULT NULL,
+	`rewards` JSON NULL DEFAULT NULL,
 	PRIMARY KEY (`item_id`) USING BTREE,
 	INDEX `battle_pass_id` (`battle_pass_id`) USING BTREE,
 	CONSTRAINT `battle_pass_items_ibfk_1` FOREIGN KEY (`battle_pass_id`) REFERENCES `redemrp2023reboot`.`battle_passes` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
 ) ENGINE=InnoDB;
+
+CREATE TABLE `battle_pass_users` (
+	`user_id` VARCHAR(36) NOT NULL COLLATE 'armscii8_bin',
+	`battle_pass_id` VARCHAR(10) NOT NULL COLLATE 'armscii8_bin',
+	`join_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`rank` INT(10) NOT NULL DEFAULT '0',
+	`xp` INT(10) NOT NULL DEFAULT '0',
+	`xpmax` INT(10) NOT NULL DEFAULT '100',
+	`seasonPassOwned` TINYINT(1) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`user_id`, `battle_pass_id`) USING BTREE,
+	INDEX `fk_battle_pass` (`battle_pass_id`) USING BTREE,
+	CONSTRAINT `fk_battle_pass` FOREIGN KEY (`battle_pass_id`) REFERENCES `redemrp2023reboot`.`battle_passes` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+)
+ENGINE=InnoDB;
+
+CREATE TABLE `battle_pass_user_items` (
+	`user_id` VARCHAR(36) NOT NULL COLLATE 'armscii8_bin',
+	`battle_pass_id` VARCHAR(10) NOT NULL COLLATE 'armscii8_bin',
+	`item_id` INT(10) NOT NULL,
+	`acquired_date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (`user_id`, `battle_pass_id`, `item_id`) USING BTREE,
+	INDEX `fk_user_item_item` (`item_id`) USING BTREE,
+	CONSTRAINT `fk_user_item_item` FOREIGN KEY (`item_id`) REFERENCES `redemrp2023reboot`.`battle_pass_items` (`item_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT `fk_user_item_user` FOREIGN KEY (`user_id`, `battle_pass_id`) REFERENCES `redemrp2023reboot`.`battle_pass_users` (`user_id`, `battle_pass_id`) ON UPDATE CASCADE ON DELETE CASCADE
+)
+ENGINE=InnoDB;
+
