@@ -1,128 +1,42 @@
 -- Global cache değişkeni
 local battlepassCache = {}
-
+local cachetimer = 10000
 -- At the top of the file...
-RedEM = exports["redem_roleplay"]:RedEM() 
-
--- Now the functions and data below is available...
-
--- Cache'i veritabanından yükleyen fonksiyon
-local function loadBattlePassCache2()
-    -- battle_passes tablosunu çekiyoruz
-    MySQL.query('SELECT * FROM battle_passes', {}, function(battlePasses)
-        if battlePasses then
-            -- battle_pass_details tablosunu çekelim
-            MySQL.query('SELECT * FROM battle_pass_details', {}, function(details)
-                -- battle_pass_items tablosunu çekelim
-                MySQL.query('SELECT * FROM battle_pass_items', {}, function(items)
-                    -- battle_pass_details verilerini battle_pass_id bazında gruplama
-                    local detailsLookup = {}
-                    for _, detail in ipairs(details) do
-                        detailsLookup[detail.battle_pass_id] = detail
-                    end
-
-                    -- battle_pass_items verilerini battle_pass_id bazında gruplama
-                    local itemsLookup = {}
-                    for _, item in ipairs(items) do
-                        if not itemsLookup[item.battle_pass_id] then
-                            itemsLookup[item.battle_pass_id] = {}
-                        end
-                        table.insert(itemsLookup[item.battle_pass_id], item)
-                    end
-
-                    -- Tüm battle_passes verilerini detay ve item bilgileriyle birleştiriyoruz
-                    local combinedData = {}
-                    for _, bp in ipairs(battlePasses) do
-                        local bpData = {
-                            info = bp,
-                            details = detailsLookup[bp.id] or {},
-                            items = itemsLookup[bp.id] or {}
-                        }
-                        table.insert(combinedData, bpData)
-                    end
-
-                    battlepassCache = combinedData
-            
-                end)
-            end)
+RedEM = exports["redem_roleplay"]:RedEM()
+data = {}
+TriggerEvent("redemrp_inventory:getData",function(call)
+    data = call
+end)
+-- Tarih parse eden yardımcı fonksiyon
+local function getTimestamp(dateValue, isEnd)
+    if type(dateValue) == "string" then
+        local year, month, day = dateValue:match("(%d+)%-(%d+)%-(%d+)")
+        if year and month and day then
+            return os.time({
+                year = tonumber(year),
+                month = tonumber(month),
+                day = tonumber(day),
+                hour = isEnd and 23 or 0,
+                min = isEnd and 59 or 0,
+                sec = isEnd and 59 or 0
+            })
         else
-            battlepassCache = {}
+            return nil
         end
-    end)
-end
--- Cache'i veritabanından yükleyen fonksiyon
-local function loadBattlePassCache2()
-    -- battle_passes tablosunu çekiyoruz
-    MySQL.query('SELECT * FROM battle_passes', {}, function(battlePasses)
-        if battlePasses then
-            -- battle_pass_details tablosunu çekelim
-            MySQL.query('SELECT * FROM battle_pass_details', {}, function(details)
-                -- battle_pass_items tablosunu çekelim
-                MySQL.query('SELECT * FROM battle_pass_items', {}, function(items)
-                    -- battle_pass_users tablosunu çekelim
-                    MySQL.query('SELECT * FROM battle_pass_users', {}, function(users)
-                        -- battle_pass_user_items tablosunu çekelim
-                        MySQL.query('SELECT * FROM battle_pass_user_items', {}, function(userItems)
-                            
-                            -- battle_pass_details verilerini battle_pass_id bazında gruplama
-                            local detailsLookup = {}
-                            for _, detail in ipairs(details) do
-                                detailsLookup[detail.battle_pass_id] = detail
-                            end
-
-                            -- battle_pass_items verilerini battle_pass_id bazında gruplama
-                            local itemsLookup = {}
-                            for _, item in ipairs(items) do
-                                if not itemsLookup[item.battle_pass_id] then
-                                    itemsLookup[item.battle_pass_id] = {}
-                                end
-                                table.insert(itemsLookup[item.battle_pass_id], item)
-                            end
-
-                            -- battle_pass_users verilerini battle_pass_id bazında gruplama
-                            local usersLookup = {}
-                            for _, user in ipairs(users) do
-                                if not usersLookup[user.battle_pass_id] then
-                                    usersLookup[user.battle_pass_id] = {}
-                                end
-                                usersLookup[user.battle_pass_id][user.user_id] = user
-                                --table.insert(usersLookup[user.battle_pass_id], user)
-                            end
-
-                            -- battle_pass_user_items verilerini battle_pass_id bazında gruplama
-                            local userItemsLookup = {}
-                            for _, userItem in ipairs(userItems) do
-                                if not userItemsLookup[userItem.battle_pass_id] then
-                                    userItemsLookup[userItem.battle_pass_id] = {}
-                                end
-                                userItemsLookup[userItem.battle_pass_id][userItem.user_id] = userItem
-                                --table.insert(userItemsLookup[userItem.battle_pass_id], userItem)
-                            end
-
-                            -- Tüm battle_passes verilerini detay, item, user ve userItem bilgileriyle birleştiriyoruz
-                            local combinedData = {}
-                            for _, bp in ipairs(battlePasses) do
-                                local bpData = {
-                                    info = bp,
-                                    details = detailsLookup[bp.id] or {},
-                                    items = itemsLookup[bp.id] or {},
-                                    users = usersLookup[bp.id] or {},
-                                    userItems = userItemsLookup[bp.id] or {}
-                                }
-                                table.insert(combinedData, bpData)
-                            end
-
-                            battlepassCache = combinedData
-                        end)
-                    end)
-                end)
-            end)
+    elseif type(dateValue) == "number" then
+        local ts = nil
+        if dateValue > 1e10 then
+            ts = math.floor(dateValue / 1000)
         else
-            battlepassCache = {}
+            ts = dateValue
         end
-    end)
+        if isEnd then
+            ts = ts + 86399  -- End date için gün sonunu ekliyoruz.
+        end
+        return ts
+    end
+    return nil
 end
-
 local function loadBattlePassCache()
     local battlePasses, details, items, users, userItems
 
@@ -140,6 +54,7 @@ local function loadBattlePassCache()
                 if not itemsLookup[item.battle_pass_id] then
                     itemsLookup[item.battle_pass_id] = {}
                 end
+                --itemsLookup[item.battle_pass_id][tostring(item.item_id)] = item
                 table.insert(itemsLookup[item.battle_pass_id], item)
             end
 
@@ -158,7 +73,8 @@ local function loadBattlePassCache()
                 if not userItemsLookup[userItem.battle_pass_id] then
                     userItemsLookup[userItem.battle_pass_id] = {}
                 end
-                userItemsLookup[userItem.battle_pass_id][userItem.user_id] = userItem
+                -- userItemsLookup[userItem.battle_pass_id][userItem.user_id] = userItem
+                table.insert(userItemsLookup[userItem.battle_pass_id], userItem)
             end
 
             -- Tüm battle_passes verilerini detay, item, user ve userItem bilgileriyle birleştiriyoruz
@@ -174,13 +90,43 @@ local function loadBattlePassCache()
                 table.insert(combinedData, bpData)
             end
 
+            -- Artık bu tabloyu global veya lokal olarak saklayabilirsiniz
             battlepassCache = combinedData
         end
     end
 
-    -- Sorguları paralel şekilde çalıştırıyoruz
+    -- 1) Tüm tabloları paralel şekilde çekiyoruz
     MySQL.query('SELECT * FROM battle_passes', {}, function(result)
         battlePasses = result or {}
+
+        -- 2) Şimdi battlePasses içinde status değerini güncelle
+        local nowTimestamp = os.time()
+        for i, bp in ipairs(battlePasses) do
+            local startTimestamp = getTimestamp(bp.start_date, false)
+            local endTimestamp   = getTimestamp(bp.end_date, true)
+
+            if startTimestamp and endTimestamp then
+                local newStatus
+                if nowTimestamp < startTimestamp then
+                    newStatus = "upcoming"
+                elseif nowTimestamp > endTimestamp then
+                    newStatus = "completed"
+                else
+                    newStatus = "active"
+                end
+                if newStatus ~= bp.status then
+                    -- Veritabanını güncelle
+                    MySQL.update('UPDATE battle_passes SET status = ? WHERE id = ?', { newStatus, bp.id }, function(rowsAffected)
+                        if rowsAffected and rowsAffected > 0 then
+                            bp.status = newStatus
+                            print(string.format("Battle Pass ID %d status updated to: %s", bp.id, newStatus))
+                            TriggerClientEvent('battlepass:triggerClientforGettinBattlePass', -1)
+                        end
+                    end)
+                end
+            end
+        end
+
         checkAndCombine()
     end)
 
@@ -204,8 +150,6 @@ local function loadBattlePassCache()
         checkAndCombine()
     end)
 end
-
-
 -- Kaynak başladığında cache'i yükle
 AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() == resourceName then
@@ -213,7 +157,7 @@ AddEventHandler('onResourceStart', function(resourceName)
             while true do
                 print("Cache Güncellendi")
                 loadBattlePassCache()  -- Cache'i güncelle
-                Citizen.Wait(60000)    -- 60000 milisaniye = 60 saniye bekle
+                Citizen.Wait(cachetimer)    -- 60000 milisaniye = 60 saniye bekle
             end
         end)
     end
@@ -233,8 +177,6 @@ AddEventHandler('battlepass:requestData', function()
         TriggerClientEvent('battlepass:sendData', src, {})
     end
 end)
-
-
 -- NUI üzerinden gelen battle pass verisini DB'ye kaydeder
 RegisterNetEvent('battlepass:saveData')
 AddEventHandler('battlepass:saveData', function(data)
@@ -318,8 +260,20 @@ AddEventHandler('battlepass:saveData', function(data)
                                 local cat = entry.category
                                 local item = entry.item
                                 MySQL.insert(
-                                    'INSERT INTO battle_pass_items (battle_pass_id, category, itemTexture, itemTextureDict, selectedBackgroundTexture, selectedBackgroundTextureDict, label, description, `rank`, owned) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                                    { passId, cat, item.itemTexture, item.itemTextureDict,  item.selectedBackgroundTexture, item.selectedBackgroundTextureDict,item.label, item.description, item.rank, item.owned and 1 or 0 },
+                                    'INSERT INTO battle_pass_items (battle_pass_id, category, itemTexture, itemTextureDict, selectedBackgroundTexture, selectedBackgroundTextureDict, label, description, `rank`, owned, rewards) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                    { 
+                                        passId, 
+                                        cat, 
+                                        item.itemTexture, 
+                                        item.itemTextureDict,  
+                                        item.selectedBackgroundTexture, 
+                                        item.selectedBackgroundTextureDict, 
+                                        item.label, 
+                                        item.description, 
+                                        item.rank, 
+                                        item.owned and 1 or 0,
+                                        item.rewards and json.encode(item.rewards) or nil  -- rewards alanı ekleniyor
+                                    },
                                     function(itemInsertId)
                                         processedItems = processedItems + 1
                                         if processedItems == totalItems then
@@ -396,111 +350,44 @@ function convertDateStringToTimestamp(dateString)
         return os.time({ year = tonumber(year), month = tonumber(month), day = tonumber(day) })
     end
 end
-
-function getActiveBattlePass2(source)
+function getActiveBattlePassforUser(source)
     local nowTimestamp = os.time()
-    local activeBattlePass = nil       
-    
-    local Player = RedEM.GetPlayer(source)
-    local userid = Player.identifier .. "_" .. Player.charid
-    -- Yardımcı fonksiyon: Giriş değeri string veya number olabilir.
-    local function getTimestamp(dateValue)
-        if type(dateValue) == "string" then
-            local year, month, day = dateValue:match("(%d+)%-(%d+)%-(%d+)")
-            if year and month and day then
-                return os.time({ year = tonumber(year), month = tonumber(month), day = tonumber(day) })
-            else
-                return nil
-            end
-        elseif type(dateValue) == "number" then
-            -- Eğer sayı çok büyükse (ör. 13 haneli) milisaniye kabul edip saniyeye çeviriyoruz.
-            if dateValue > 1e10 then
-                return math.floor(dateValue / 1000)
-            else
-                return dateValue
-            end
-        end
-        return nil
-    end
+    local selectedUserPassData = nil
     for _, bp in ipairs(battlepassCache or {}) do
-        local startTimestamp = getTimestamp(bp.info.start_date)
-        local endTimestamp = getTimestamp(bp.info.end_date)
+        local startTimestamp = getTimestamp(bp.info.start_date, false)
+        local endTimestamp = getTimestamp(bp.info.end_date, true)  -- true olarak geçiriyoruz
         if startTimestamp and endTimestamp then
             if nowTimestamp >= startTimestamp and nowTimestamp <= endTimestamp then
-                activeBattlePass = bp
+                selectedUserPassData = deepCopy(bp)
                 break  -- Aynı anda sadece 1 pass aktif olabilir.
             end
         end
     end
-    return activeBattlePass
-end
-function getActiveBattlePass(source)
-    local nowTimestamp = os.time()
-    local activeBattlePass = nil       
-
-    local Player = RedEM.GetPlayer(source)
-    local userid = Player.identifier .. "_" .. Player.charid
-
-    -- Yardımcı fonksiyon: Giriş değeri string veya number olabilir.
-    local function getTimestamp(dateValue)
-        if type(dateValue) == "string" then
-            local year, month, day = dateValue:match("(%d+)%-(%d+)%-(%d+)")
-            if year and month and day then
-                return os.time({ year = tonumber(year), month = tonumber(month), day = tonumber(day) })
-            else
-                return nil
-            end
-        elseif type(dateValue) == "number" then
-            -- Eğer sayı çok büyükse (ör. 13 haneli) milisaniye kabul edip saniyeye çeviriyoruz.
-            if dateValue > 1e10 then
-                return math.floor(dateValue / 1000)
-            else
-                return dateValue
-            end
-        end
-        return nil
-    end
-
-    for _, bp in ipairs(battlepassCache or {}) do
-        local startTimestamp = getTimestamp(bp.info.start_date)
-        local endTimestamp = getTimestamp(bp.info.end_date)
-        if startTimestamp and endTimestamp then
-            if nowTimestamp >= startTimestamp and nowTimestamp <= endTimestamp then
-                activeBattlePass = deepCopy(bp)
-                break  -- Aynı anda sadece 1 pass aktif olabilir.
-            end
-        end
-    end
-
-    if activeBattlePass then
-        -- İlgili battle pass içindeki tüm kullanıcı verilerinden yalnızca istekte bulunan kullanıcıyı filtrele
-        local filteredUser = nil
-        if activeBattlePass.users then
-            for k,l in pairs(activeBattlePass.users) do
-                print(k,l)
-                if k == userid then
-                    filteredUser = l
-                    break
+    if source then 
+        local Player = RedEM.GetPlayer(source)
+        local userid = Player.identifier .. "_" .. Player.charid     
+        if selectedUserPassData then
+            -- İlgili battle pass içindeki tüm kullanıcı verilerinden yalnızca istekte bulunan kullanıcıyı filtrele
+            local filteredUser = nil
+            if selectedUserPassData.users then
+                for k,l in pairs(selectedUserPassData.users) do
+                    print(k,l)
+                    if k == userid then
+                        filteredUser = l
+                        break
+                    end
                 end
             end
+            print("selectedUserPassData : ", json.encode(selectedUserPassData), " : selectedUserPassData")        
+            selectedUserPassData.users = nil
+            selectedUserPassData.user = filteredUser
         end
-
-        -- Aynı şekilde battle pass item verilerinde filtreleme
-        local filteredUserItems = {}
-        if activeBattlePass.userItems then
-            for k,l in pairs(activeBattlePass.userItems) do
-                if k == userid then
-                    filteredUserItems = l
-                    break
-                end
-            end
-        end
-        activeBattlePass.users = nil
-        activeBattlePass.user = filteredUser
-        activeBattlePass.userItems = filteredUserItems
     end
-
-    return activeBattlePass
+    -- print("selectedUserPassData : ", json.encode(selectedUserPassData), " : selectedUserPassData")
+    -- for k,l in pairs(selectedUserPassData.userItems)do
+    --     selectedUserPassData.items[tostring(l.item_id)].owned = true
+    -- end
+    return selectedUserPassData
 end
 function deepCopy(original)
     local orig_type = type(original)
@@ -516,13 +403,12 @@ function deepCopy(original)
     end
     return copy
 end
-
 function createBattlePassUserIfNotExists(source)
     local Player = RedEM.GetPlayer(source)
     local userid = Player.identifier .. "_" .. Player.charid
 
     -- Aktif battle pass'i alıyoruz
-    local activeBattlePass = getActiveBattlePass(source)
+    local activeBattlePass = getActiveBattlePassforUser(source)
     if not activeBattlePass then
         print("Aktif battle pass bulunamadı.")
         return
@@ -556,46 +442,69 @@ function createBattlePassUserIfNotExists(source)
     end
 
 end
+-- Ödül verme işlemi için örnek placeholder fonksiyonlar
+local function GivePlayerItem(source, itemName, amount)
+    -- Oyuncunun envanterine item ekleme işlemini buraya ekleyin.
+    print("Player " .. source .. " awarded item: " .. itemName .. " x" .. amount)
+end
 
+local function AddPlayerCurrency(source, currencyName, amount)
+    -- Oyuncunun parasını güncelleme işlemini buraya ekleyin.
+    print("Player " .. source .. " awarded currency: " .. currencyName .. " x" .. amount)
+end
+RegisterNetEvent("seasonpass:collectItem")
+AddEventHandler("seasonpass:collectItem", function(item)
+    local src = source
+    local Player = RedEM.GetPlayer(source)
+    local userid = Player.identifier .. "_" .. Player.charid
+    
+    if not item or not item.itemId then
+        print("Invalid item data received from player " .. tostring(src))
+        TriggerClientEvent("seasonpass:collectResult", src, { success = false, error = "Invalid item data" })
+        return
+    end
 
+    -- 1. Adım: Oyuncuya ödüllerini verelim (rewards dizisi üzerinden)
+    if item.rewards then
+        for _, reward in ipairs(item.rewards) do
+            if reward.type == "item" then
+                print("reward.name", reward.name)
+                local ItemData = data.getItem(src, reward.name) -- this give you info and functions
+                ItemData.AddItem(reward.amount)
+            elseif reward.type == "currency" then
+                print(reward.amount,"reward.amount")
+                Player.AddMoney(reward.amount)
+            else
+                print("Unknown reward type: " .. tostring(reward.type))
+            end
+        end
+    end
+
+    -- battlePassId değerini burada örnek olarak "default_battle_pass" olarak belirliyoruz.
+    -- Gerçek uygulamanızda bu değeri uygun şekilde sağlamalısınız.
+    local battlePassId = item.battle_pass_id 
+      
+    -- 3. Adım: battle_pass_user_items tablosuna oyuncunun topladığı item'ı kaydedelim.
+    MySQL.insert(
+        "INSERT INTO battle_pass_user_items (user_id, battle_pass_id, item_id) VALUES (?, ?, ?)",
+        { userid, battlePassId, item.itemId },
+        function(insertId)
+            if insertId then
+                TriggerClientEvent("seasonpass:claimItem", src, item)
+                TriggerClientEvent("seasonpass:collectResult", src, { success = true })                
+            else
+                TriggerClientEvent("seasonpass:collectResult", src, { success = false, error = "Failed to save item collection" })
+            end
+        end
+    ) 
+end)
 RegisterNetEvent('battlepass:getActiveBattlePass')
 AddEventHandler('battlepass:getActiveBattlePass', function()
     local src = source
     if src ~= 0 then
-        TriggerClientEvent('battlepass:activeData', src, getActiveBattlePass(src))
+        TriggerClientEvent('battlepass:activeData', src, getActiveBattlePassforUser(src))
     end
 end)
-RegisterNetEvent('battlepass:deleteBattlePass2')
-AddEventHandler('battlepass:deleteBattlePass2', function(passId)
-    local src = source
-    if not passId then
-        TriggerClientEvent('battlepass:deleteResult', src, { success = false, error = "Geçersiz battle pass id" })
-        return
-    end
-    -- Öncelikle battle_pass_items tablosundan ilgili kayıtları silelim
-    MySQL.update('DELETE FROM battle_pass_items WHERE battle_pass_id = ?', { passId }, function(affectedItems)
-        -- Sonrasında battle_pass_details tablosundan silme işlemi
-        MySQL.update('DELETE FROM battle_pass_details WHERE battle_pass_id = ?', { passId }, function(affectedDetails)
-            -- En son battle_passes tablosundan silme işlemi
-            MySQL.update('DELETE FROM battle_passes WHERE id = ?', { passId }, function(affectedPass)
-                if affectedPass > 0 then
-                    -- Cache güncellemesi: silinen pass cache'den de çıkarılıyor
-                    for i, bp in ipairs(battlepassCache or {}) do
-                        if bp.info.id == tostring(passId) then
-                            table.remove(battlepassCache, i)
-                            break
-                        end
-                    end
-                    TriggerClientEvent('battlepass:deleteResult', src, { success = true })
-                else
-                    TriggerClientEvent('battlepass:deleteResult', src, { success = false, error = "Battle pass bulunamadı" })
-                end
-                -- silinen passId aktif pass ise... 
-            end)
-        end)
-    end)
-end)
-
 RegisterNetEvent('battlepass:deleteBattlePass')
 AddEventHandler('battlepass:deleteBattlePass', function(passId)
     local src = source
@@ -611,11 +520,16 @@ AddEventHandler('battlepass:deleteBattlePass', function(passId)
             MySQL.update('DELETE FROM battle_passes WHERE id = ?', { passId }, function(affectedPass)
                 if affectedPass > 0 then
                     local wasActive = false
+                    -- getActiveBattlePassforUser
+                    local activepass = getActiveBattlePassforUser()
                     -- Cache güncellemesi: silinen pass cache'den de çıkarılıyor
                     for i, bp in ipairs(battlepassCache or {}) do
                         if bp.info.id == tostring(passId) then
-                            wasActive = true
                             table.remove(battlepassCache, i)
+                            print("bp id : ",bp.info.id, " activepassid", activepass.info.id)
+                            if bp.info.id == activepass.info.id then
+                                wasActive = true
+                            end
                             break
                         end
                     end
@@ -631,10 +545,10 @@ AddEventHandler('battlepass:deleteBattlePass', function(passId)
         end)
     end)
 end)
-
-
 AddEventHandler("redemrp:playerLoaded",function(source, user)
     local src = source
+    Wait(500)
     createBattlePassUserIfNotExists(src)
-    TriggerClientEvent('battlepass:activeData', src, getActiveBattlePass(src))
+    TriggerClientEvent('battlepass:activeData', src, getActiveBattlePassforUser(src))
 end)
+

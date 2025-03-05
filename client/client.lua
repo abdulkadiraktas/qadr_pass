@@ -5,6 +5,12 @@ RegisterCommand('setBattlePass', function(source, args, rawCommand)
     TriggerServerEvent("battlepass:getActiveBattlePass")    
 end)
 
+RegisterNetEvent("battlepass:triggerClientforGettinBattlePass")
+AddEventHandler("battlepass:triggerClientforGettinBattlePass", function()
+    print("Pass Updated Get New Data")
+    TriggerServerEvent("battlepass:getActiveBattlePass")
+end)
+
 RegisterNetEvent('battlepass:activeData', function(activeBattlePass)
     print("Active Battle Pass:", json.encode(activeBattlePass))
     if activeBattlePass then
@@ -64,9 +70,15 @@ RegisterNetEvent('battlepass:activeData', function(activeBattlePass)
                 rankItem = {}
             }
         }
-
         -- activeBattlePass.items dizisini dolaşıp, kategoriye göre seasonData.items tablolarına ekleyelim:
-        for _, item in ipairs(activeBattlePass.items or {}) do
+        for _, item in pairs(activeBattlePass.items or {}) do
+            local owned = false
+            for k,l in pairs(activeBattlePass.userItems) do
+                if l.item_id == item.item_id then
+                    owned = true
+                    break
+                end
+            end
             local mappedItem = {
                 itemTexture = item.itemTexture,
                 itemTextureDict = item.itemTextureDict,
@@ -74,9 +86,12 @@ RegisterNetEvent('battlepass:activeData', function(activeBattlePass)
                 selectedBackgroundTextureDict = item.selectedBackgroundTextureDict,
                 label = item.label,
                 description = item.description,
-                owned = item.owned,
+                owned = owned,
                 rank = item.rank,
-                tooltipRawText = item.tooltipRawText or item.label
+                tooltipRawText = item.tooltipRawText or item.label,
+                rewards = item.rewards,
+                itemId = item.item_id,
+                battle_pass_id = item.battle_pass_id,
             }
             
             if item.category == "free" then
@@ -95,6 +110,9 @@ end)
 -- Sunucudan veri geldiğinde yakalayalım
 RegisterNetEvent('battlepass:sendData')
 AddEventHandler('battlepass:sendData', function(data)
+    print("loadBattlePasses")
+    print(json.encode(data))
+    print("loadBattlePasses")
     -- data = MySQL'den gelen satırların listesi
     -- Bunu NUI'ye (HTML/JS) gönderelim:
     SendNUIMessage({
