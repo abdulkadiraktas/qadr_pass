@@ -36,3 +36,6 @@ https://www.youtube.com/watch?v=LxdI-Ez4pVE&list=PLchFjqoahGcmI997Gtbue4o6GhGtPr
 ![Pass History](.gitimages/pass_history.png)
 
 
+[Item Backgrounds](texturesforui/item-bg)
+
+[Popup Backgrounds](texturesforui/season_pass_popup_bg)
