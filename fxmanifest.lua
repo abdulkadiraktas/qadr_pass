@@ -14,6 +14,8 @@ files {
     'client/html/dist/assets/*.js',
     'client/html/dist/assets/*.css',
     'client/html/dist/assets/*.png',
+    'client/html/dist/locales/en/*.json',
+    'client/html/dist/locales/tr/*.json',
 }
 shared_script {
     "shared/conf.lua",

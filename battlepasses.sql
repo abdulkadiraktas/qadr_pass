@@ -8,7 +8,9 @@ CREATE TABLE `battle_passes` (
 	`premium_players` INT(10) NOT NULL,
 	`status` VARCHAR(50) NOT NULL COLLATE 'armscii8_bin',
 	PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB;
+)
+ENGINE=InnoDB;
+
 
 -- Battle Pass Detayları Tablosu
 CREATE TABLE `battle_pass_details` (
@@ -26,6 +28,8 @@ CREATE TABLE `battle_pass_details` (
 	`progress_tile_texture_dict` VARCHAR(100) NULL DEFAULT NULL COLLATE 'armscii8_bin',
 	`progress_tile_texture` VARCHAR(100) NULL DEFAULT NULL COLLATE 'armscii8_bin',
 	`progress_rank_text_color` VARCHAR(50) NULL DEFAULT NULL COLLATE 'armscii8_bin',
+	`progress_large_texture_dict` VARCHAR(100) NULL DEFAULT NULL COLLATE 'armscii8_bin',
+	`progress_large_texture` VARCHAR(100) NULL DEFAULT NULL COLLATE 'armscii8_bin',
 	`progress_large_texture_alpha` INT(10) NULL DEFAULT NULL,
 	`progress_enabled` TINYINT(1) NULL DEFAULT NULL,
 	`progress_tile_overlay_visible` TINYINT(1) NULL DEFAULT NULL,

@@ -1,0 +1,193 @@
+{
+  "app": {
+    "title": "Battle Pass Admin",
+    "closeUI": "Close UI"
+  },
+  "nav": {
+    "history": "Battle Pass History",
+    "creator": "Battle Pass Creator"
+  },
+  "history": {
+    "title": "Battle Pass History",
+    "subtitle": "View and manage all Battle Pass seasons",
+    "search": "Search battle passes...",
+    "filter": {
+      "upcoming": "Upcoming",
+      "active": "Active",
+      "completed": "Completed"
+    },
+    "sort": {
+      "title": "Sort by",
+      "date": "Sort by Date",
+      "name": "Sort by Name",
+      "players": "Sort by Players"
+    },
+    "card": {
+      "viewDetails": "View Details",
+      "premium": "premium",
+      "players": "players",
+      "startsIn": "Starts in",
+      "days": "days",
+      "confirmDeletion": "Confirm Deletion",
+      "deleteConfirmText": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "noResults": "No battle passes found matching your criteria"
+  },
+  "details": {
+    "backToHistory": "Back to History",
+    "rewards": "Rewards",
+    "freeReward": "Free Reward",
+    "premiumRewards": "Premium Rewards",
+    "noReward": "No reward",
+    "scroll": "Scroll to see all rewards",
+    "lockedReward": "Locked reward",
+    "seasonInfo": "Season Information",
+    "duration": "Duration",
+    "totalPlayers": "Total Players",
+    "premiumPlayers": "Premium Players",
+    "status": "Status"
+  },
+  "creator": {
+    "title": {
+      "create": "Create Battle Pass",
+      "edit": "Edit Battle Pass"
+    },
+    "subtitle": "Configure season details and progression requirements",
+    "tabs": {
+      "general": "General",
+      "seasonPopup": "Season Pass Popup Settings",
+      "visuals": "Visual Settings",
+      "items": "Items & Rewards"
+    },
+    "buttons": {
+      "reset": "Reset",
+      "loadDummy": "Load Dummy Data",
+      "saving": "Saving...",
+      "saved": "Saved!",
+      "error": "Error!",
+      "update": "Update",
+      "save": "Save Changes"
+    },
+    "resetModal": {
+      "title": "Reset Configuration",
+      "content": "Are you sure you want to reset all configuration values? This action cannot be undone.",
+      "cancel": "Cancel",
+      "reset": "Reset All"
+    }
+  },
+  "general": {
+    "basicInfo": {
+      "title": "Basic Information",
+      "required": "Required",
+      "passName": "Pass Name",
+      "passNamePlaceholder": "The Halloween Pass 2",
+      "buyPrompt": "Buy Prompt Text",
+      "buyPromptPlaceholder": "Get ready for exclusive rewards!"
+    },
+    "season": {
+      "title": "Season Duration",
+      "required": "Required",
+      "start": "Season Start",
+      "end": "Season End",
+      "error": "End date must be after start date"
+    }
+  },
+  "seasonPopup": {
+    "logo": {
+      "title": "Logo Settings",
+      "required": "Required",
+      "dict": "Logo Dictionary",
+      "dictPlaceholder": "Enter logo dictionary...",
+      "texture": "Logo Texture",
+      "texturePlaceholder": "Enter texture name..."
+    },
+    "body": {
+      "title": "Body Content",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Enter an engaging title...",
+      "line1": "Line 1",
+      "line1Placeholder": "Enter the main description...",
+      "line2": "Line 2",
+      "line2Placeholder": "Enter additional details..."
+    },
+    "background": {
+      "title": "Background Settings",
+      "required": "Required",
+      "dict": "Background Dictionary",
+      "dictPlaceholder": "Enter background dictionary...",
+      "texture": "Background Texture",
+      "texturePlaceholder": "Enter texture name...",
+      "gradientDict": "Gradient Dictionary",
+      "gradientDictPlaceholder": "Enter gradient dictionary...",
+      "gradientTexture": "Gradient Texture",
+      "gradientTexturePlaceholder": "Enter gradient texture..."
+    }
+  },
+  "visuals": {
+    "progress": {
+      "title": "Progress Page Settings",
+      "tileDict": "Tile Texture Dictionary",
+      "tileDictPlaceholder": "Enter tile texture dictionary...",
+      "tile": "Tile Texture",
+      "tilePlaceholder": "Enter tile texture...",
+      "largeTxd": "Large Texture TXD",
+      "largeTxdPlaceholder": "Enter large texture TXD...",
+      "largeName": "Large Texture Name",
+      "largeNamePlaceholder": "Enter large texture name...",
+      "alpha": "Large Texture Alpha",
+      "alphaError": "Alpha value must be between 0 and 255",
+      "tooltip": "Season Tooltip Text",
+      "tooltipPlaceholder": "Enter season tooltip text..."
+    }
+  },
+  "items": {
+    "premium": "Premium Track Items",
+    "free": "Free Track Items",
+    "jsonImport": "JSON Import",
+    "addItem": "Add Item",
+    "item": "Item",
+    "label": "Label",
+    "rank": "Rank",
+    "actions": "Actions",
+    "edit": "Edit",
+    "noItems": "No items added yet",
+    "modal": {
+      "title": {
+        "add": "Add",
+        "edit": "Edit"
+      },
+      "premium": "Premium",
+      "free": "Free",
+      "trackItem": "Track Item",
+      "itemTexture": "Item Texture",
+      "textureDictionary": "Texture Dictionary",
+      "selectedBgTexture": "Selected Background Texture",
+      "selectedBgDict": "Selected Background Dictionary",
+      "label": "Label",
+      "rank": "Rank",
+      "description": "Description",
+      "tooltip": "Tooltip Raw Text",
+      "rewards": "Rewards",
+      "addItemReward": "Add Item",
+      "addCurrency": "Add Currency",
+      "amount": "Amount",
+      "noRewards": "No rewards added yet. Add an item or currency reward.",
+      "cancel": "Cancel",
+      "addItemButton": "Add Item",
+      "updateItem": "Update Item"
+    },
+    "import": {
+      "title": {
+        "premium": "Import Premium Items from JSON",
+        "free": "Import Free Items from JSON"
+      },
+      "description": "Paste a JSON array of items to import. Each item should have the following properties:",
+      "jsonData": "JSON Data",
+      "jsonPlaceholder": "Paste JSON array here...",
+      "cancel": "Cancel",
+      "import": "Import Items"
+    }
+  }
+}
