@@ -5,7 +5,7 @@ rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aw
 
 author 'Abdulkadir Aktas'
 description 'Native Battle Pass system for RedM with Qadr_ui'
-version '1.0.0'
+version '1.2.0'
 
 ui_page 'client/html/dist/index.html'
 
@@ -16,12 +16,6 @@ files {
     'client/html/dist/assets/*.png',
     'client/html/dist/locales/en/*.json',
 }
-shared_script {
-    "shared/conf.lua",
-    "lang/*.lua",
-    "shared/dataview.lua",
-    "shared/functions.lua",
-}
 
 client_script {
     "client/*.lua",
@@ -29,15 +23,7 @@ client_script {
 
 server_script {
     '@oxmysql/lib/MySQL.lua', -- oxmysql kütüphanesi
-    "server/verification.lua",
     "server/server.lua",
-}
-
-escrow_ignore {
-    "README.md",
-    "shared/conf.lua",
-    "lang/*.lua",
-    "shared/dataview.lua",
 }
 
 lua54 'yes'
