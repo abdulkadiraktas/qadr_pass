@@ -151,6 +151,18 @@ AddEventHandler("qadr_pass:updateXP", function(data)
     })
 end)
 
+-- @description: This event receives the result of an item purchase attempt from the server.
+-- @event: qadr_pass:purchaseResult
+-- @param: data - The result data.
+RegisterNetEvent('qadr_pass:passPurchase')
+AddEventHandler('qadr_pass:passPurchase', function(data)
+    local currentPass = exports["qadr_ui"]:qadr_ui_get_current_seasonpass()
+    currentPass:update({
+        seasonPassowned = data.seasonPassOwned
+    })
+end)
+
+
 -- @description: This event receives the result of an item collection attempt from the server.
 -- @event: qadr_pass:collectResult
 -- @param: data - The result data.

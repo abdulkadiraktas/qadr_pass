@@ -825,6 +825,134 @@ AddEventHandler('qadr_pass:addXP', function(earnedXP)
     addPlayerPassXP(src, earnedXP)
 end)
 
+RegisterNetEvent('qadr_pass:addSeasonPass')
+AddEventHandler('qadr_pass:addSeasonPass', function()
+    local src = source
+    addPlayerSeasonPass(src)
+end)
+
+-- @param source number The source of the player.
+local function addPlayerSeasonPass(source)
+    local Player = RedEM.GetPlayer(source)
+    if not Player then return end
+
+    local userid = Player.identifier .. "_" .. Player.charid
+    local activePass = getActiveBattlePassforUser(source)
+
+    if not activePass or not activePass.user then
+        print("Aktif pass veya kullanıcı bulunamadı.")
+        return
+    end
+
+    local userPassData = activePass.user
+    if userPassData.seasonPassOwned == 1 then
+        print("Kullanıcı zaten season pass'e sahip.")
+        return
+    end
+
+    -- Güncellemeyi önce veritabanına kaydedelim
+    MySQL.update('UPDATE battle_pass_users SET seasonPassOwned = ? WHERE user_id = ? AND battle_pass_id = ?', {
+        1,
+        userid,
+        activePass.info.id
+    }, function(rowsAffected, error)
+        if error then
+            print("Season Pass güncelleme hatası:", error)
+        elseif rowsAffected > 0 then
+            -- Cache'i de güncelle
+            for _, bp in ipairs(battlepassCache) do
+                if bp.info.id == activePass.info.id then
+                    if bp.users and bp.users[userid] then
+                        bp.users[userid].seasonPassOwned = 1
+                    end
+                    break
+                end
+            end
+
+            -- Kullanıcıya bilgi gönder (client event)
+            TriggerClientEvent('qadr_pass:passPurchase', source, {
+                seasonPassOwned = 1
+            })
+        end
+    end)
+end
+
+RegisterCommand("addSeasonPass", function(source, args, rawCommand)
+    local src = source
+    addPlayerSeasonPass(src)
+end)
+RegisterCommand("addXP", function(source, args, rawCommand)
+    local src = source
+    local earnedXP = tonumber(args[1]) or 1
+    addPlayerPassXP(src, earnedXP)
+end)
+RegisterCommand("setrank", function(source, args, rawCommand)
+    local src = source
+    local rank = tonumber(args[1]) or 1
+    setPlayerPassRank(src, rank)
+end)
+
+-- @param source number The source of the player.
+-- @param newRank number The new rank to set for the player.
+function setPlayerPassRank(source, newRank)
+    local Player = RedEM.GetPlayer(source)
+    if not Player then return end
+
+    local userid = Player.identifier .. "_" .. Player.charid
+    local activePass = getActiveBattlePassforUser(source)
+
+    if not activePass or not activePass.user then
+        print("Aktif pass veya kullanıcı bulunamadı.")
+        return
+    end
+
+    local userPassData = activePass.user
+    local currentXP = userPassData.xp or 0
+    local currentRank = userPassData.rank or 0
+    local xpRequired = userPassData.xpmax or 100
+
+    -- Yeni rank'ı ayarlayalım
+    local newRank = math.max(0, newRank) -- Rank 0'dan küçük olamaz
+    local newXP = currentXP
+    local newXpRequired = xpRequired
+    if newRank > 0 then
+        newXpRequired = newXpRequired + (newRank-1) * 100
+    end
+    -- Güncellemeyi önce veritabanına kaydedelim
+    MySQL.update('UPDATE battle_pass_users SET `rank` = ?, xp = ?, xpmax = ? WHERE user_id = ? AND battle_pass_id = ?', {
+        newRank,
+        newXP,
+        newXpRequired,
+        userid,
+        activePass.info.id
+    }, function(rowsAffected, error)
+        if error then
+            print("Rank güncelleme hatası:", error)
+        elseif rowsAffected > 0 then
+            -- Cache'i de güncelle
+            for _, bp in ipairs(battlepassCache) do
+                if bp.info.id == activePass.info.id then
+                    if bp.users and bp.users[userid] then
+                        bp.users[userid].rank = newRank
+                        bp.users[userid].xp = newXP
+                        bp.users[userid].xpmax = newXpRequired
+                    end
+                    break
+                end
+            end
+
+            -- Kullanıcıya bilgi gönder (client event)
+            TriggerClientEvent('qadr_pass:updateXP', source, {
+                xp = newXP,
+                rank = newRank,
+                xpmax = newXpRequired
+            })
+        end
+    end)
+end
+
+    
+
 -- @description This command is used to get the battle pass cache.
 -- @command getCache
 RegisterCommand("getCache", function(source, args, rawCommand)
