@@ -1,0 +1,149 @@
+{
+  "vipItems": [
+    {
+      "itemTexture": "provision_folder_watches",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "walk_style_greenhorn",
+      "selectedBackgroundTextureDict": "walk_style_greenhorn",
+      "label": "items - 1",
+      "rank": 1,
+      "description": "items - 1",
+      "tooltipRawText": "items - 1",
+      "rewards": []
+    },
+    {
+      "itemTexture": "provision_fish_largemouth_bass",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "upgrade_photo_pose_two_chairs",
+      "selectedBackgroundTextureDict": "upgrade_photo_pose_two_chairs",
+      "label": "items - 1",
+      "rank": 1,
+      "description": "items - 1",
+      "tooltipRawText": "",
+      "rewards": []
+    },
+    {
+      "itemTexture": "consumable_herb_red_sage",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "upgrade_photo_pose_pistols_v_formation",
+      "selectedBackgroundTextureDict": "upgrade_photo_pose_pistols_v_formation",
+      "label": "items - 5",
+      "rank": 5,
+      "description": "items - 5",
+      "tooltipRawText": "",
+      "rewards": []
+    },
+    {
+      "itemTexture": "consumable_aged_pirate_rum",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "upgrade_photo_backdrop_travel_beach",
+      "selectedBackgroundTextureDict": "upgrade_photo_backdrop_travel_beach",
+      "label": "items - 6",
+      "rank": 5,
+      "description": "items - 6",
+      "tooltipRawText": "",
+      "rewards": []
+    },
+    {
+      "itemTexture": "clothing_item_sp_collectable_hat_mr1_093",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "upgrade_photo_backdrop_role_moonshiner",
+      "selectedBackgroundTextureDict": "upgrade_photo_backdrop_role_moonshiner",
+      "label": "items - 3",
+      "rank": 3,
+      "description": "items - 3",
+      "tooltipRawText": "",
+      "rewards": []
+    },
+    {
+      "itemTexture": "reinforced_survivalist_offhand_holster",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "upgrade_photo_backdrop_interior_theatre",
+      "selectedBackgroundTextureDict": "upgrade_photo_backdrop_interior_theatre",
+      "label": "items - 6",
+      "rank": 6,
+      "description": "items - 6",
+      "tooltipRawText": "",
+      "rewards": []
+    },
+    {
+      "itemTexture": "provision_talisman_alligator_tooth",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "upgrade_photo_backdrop_countryside_snowfield",
+      "selectedBackgroundTextureDict": "upgrade_photo_backdrop_countryside_snowfield",
+      "label": "items - 7",
+      "rank": 7,
+      "description": "items - 7",
+      "tooltipRawText": "",
+      "rewards": []
+    }
+  ],
+  "freeItems": [
+    {
+      "itemTexture": "kit_pouch_remedies",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "upgrade_moonshiner_bar_photo_13",
+      "selectedBackgroundTextureDict": "upgrade_moonshiner_bar_photo_13",
+      "label": "items - 2",
+      "rank": 2,
+      "description": "items - 2",
+      "tooltipRawText": "",
+      "rewards": []
+    },
+    {
+      "itemTexture": "consumable_herb_violet_snowdrop",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "upgrade_moonshiner_bar_photo_09",
+      "selectedBackgroundTextureDict": "upgrade_moonshiner_bar_photo_09",
+      "label": "items - 1",
+      "rank": 1,
+      "description": "items - 1",
+      "tooltipRawText": "",
+      "rewards": []
+    },
+    {
+      "itemTexture": "clothing_item_sp_collectable_hat_mr1_005",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "upgrade_moonshiner_bar_photo_07",
+      "selectedBackgroundTextureDict": "upgrade_moonshiner_bar_photo_07",
+      "label": "items - 5",
+      "rank": 5,
+      "description": "items - 5",
+      "tooltipRawText": "",
+      "rewards": []
+    },
+    {
+      "itemTexture": "ammo_bullet_normal",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "upgrade_moonshiner_bar_photo_05",
+      "selectedBackgroundTextureDict": "upgrade_moonshiner_bar_photo_05",
+      "label": "items - 6",
+      "rank": 6,
+      "description": "items - 6",
+      "tooltipRawText": "",
+      "rewards": []
+    },
+    {
+      "itemTexture": "ammo_bullet_normal",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "upgrade_moonshiner_bar_photo_05",
+      "selectedBackgroundTextureDict": "upgrade_moonshiner_bar_photo_05",
+      "label": "items - 6",
+      "rank": 10,
+      "description": "items - 6",
+      "tooltipRawText": "",
+      "rewards": []
+    },
+    {
+      "itemTexture": "ammo_bullet_normal",
+      "itemTextureDict": "inventory_items",
+      "selectedBackgroundTexture": "upgrade_moonshiner_bar_photo_05",
+      "selectedBackgroundTextureDict": "upgrade_moonshiner_bar_photo_05",
+      "label": "items - 6",
+      "rank": 16,
+      "description": "items - 6",
+      "tooltipRawText": "",
+      "rewards": []
+    }
+  ]
+}
