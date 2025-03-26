@@ -1,22 +1,5 @@
 local tempDicts = {}
 
--- @description: This command triggers a server event to request battle pass data.
--- @param: src - The source of the command (player ID).
--- @param: args - Arguments passed to the command.
--- @param: raw - The raw command string.
--- @usage: /showBattlePassAdmin
-RegisterCommand("showBattlePassAdmin", function(src,args,raw)
-    TriggerServerEvent('qadr_pass:requestData')
-end, true)
-
--- @description: This command triggers a server event to get the active battle pass data.
--- @param: source - The source of the command (player ID).
--- @param: args - Arguments passed to the command.
--- @param: rawCommand - The raw command string.
--- @usage: /setBattlePass
-RegisterCommand('setBattlePass', function(source, args, rawCommand)
-    TriggerServerEvent("qadr_pass:getActiveBattlePass")    
-end)
 
 -- @description: This event triggers a server event to get the active battle pass data.
 -- @event: qadr_pass:triggerClientforGettinBattlePass

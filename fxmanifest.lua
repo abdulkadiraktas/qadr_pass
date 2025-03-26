@@ -5,7 +5,7 @@ rdr3_warning 'I acknowledge that this is a prerelease build of RedM, and I am aw
 
 author 'Abdulkadir Aktas'
 description 'Native Battle Pass system for RedM with Qadr_ui'
-version '1.2.0'
+version '1.2.1'
 
 ui_page 'client/html/dist/index.html'
 
@@ -15,6 +15,11 @@ files {
     'client/html/dist/assets/*.css',
     'client/html/dist/assets/*.png',
     'client/html/dist/locales/en/*.json',
+}
+shared_script {
+    "shared/conf.lua",
+    "locales/*.lua",
+    "shared/localization.lua",
 }
 
 client_script {

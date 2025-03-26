@@ -332,8 +332,8 @@ end)
 -- @description: This event is triggered to request battle pass data. It sends the battle pass cache to the client.
 -- @event: qadr_pass:requestData
 RegisterNetEvent('qadr_pass:requestData')
-AddEventHandler('qadr_pass:requestData', function()
-    local src = source
+AddEventHandler('qadr_pass:requestData', function(_src)
+    local src = _src or source
     if battlepassCache and #battlepassCache > 0 then
         TriggerClientEvent('qadr_pass:sendData', src, battlepassCache)
     else
@@ -749,8 +749,8 @@ end)
 -- @description: This event is triggered to get the active battle pass data for a player. It then sends the data to the client.
 -- @event: qadr_pass:getActiveBattlePass
 RegisterNetEvent('qadr_pass:getActiveBattlePass')
-AddEventHandler('qadr_pass:getActiveBattlePass', function()
-    local src = source
+AddEventHandler('qadr_pass:getActiveBattlePass', function(_src)
+    local src = _src or source
     if src ~= 0 then
         TriggerClientEvent('qadr_pass:activeData', src, getActiveBattlePassforUser(src))
     end
@@ -877,21 +877,6 @@ local function addPlayerSeasonPass(source)
     end)
 end
 
-RegisterCommand("addSeasonPass", function(source, args, rawCommand)
-    local src = source
-    addPlayerSeasonPass(src)
-end)
-RegisterCommand("addXP", function(source, args, rawCommand)
-    local src = source
-    local earnedXP = tonumber(args[1]) or 1
-    addPlayerPassXP(src, earnedXP)
-end)
-RegisterCommand("setrank", function(source, args, rawCommand)
-    local src = source
-    local rank = tonumber(args[1]) or 1
-    setPlayerPassRank(src, rank)
-end)
-
 -- @param source number The source of the player.
 -- @param newRank number The new rank to set for the player.
 function setPlayerPassRank(source, newRank)
@@ -951,13 +936,95 @@ function setPlayerPassRank(source, newRank)
     end)
 end
 
+-- @description Checks if a player has permission to execute a specific command
+-- @param source number The player's source ID
+-- @param command string The command name to check permissions for
+-- @return boolean Returns true if player has permission, false otherwise
+local function hasPermission(source, command)
+    local Player = RedEM.GetPlayer(source)
+    if not Player then return false end
+    print(Player.group)
     
-
--- @description This command is used to get the battle pass cache.
--- @command getCache
-RegisterCommand("getCache", function(source, args, rawCommand)
-    local src = source
-    if src == 0 then
-        print(json.encode(battlepassCache))
+    local allowedGroups = qadr_pass_settings.permissions[command]
+    if not allowedGroups then return false end
+    
+    -- Player.group değerini izin verilen gruplar listesinde kontrol et
+    for _, allowedGroup in ipairs(allowedGroups) do
+        if Player.group == allowedGroup then
+            return true
+        end
     end
+    return false
+end
+
+-- @description Adds a season pass to the player who executes the command
+-- @command /addSeasonPass [playerID]
+-- @param source number The source ID of the player executing the command
+-- @param args table Command arguments - args[1] optional target player ID
+-- @param rawCommand string The raw command string (not used)
+RegisterCommand("addSeasonPass", function(source, args, rawCommand)
+    local src = tonumber(args[1]) or source
+    if not hasPermission(src, "addpass") then
+        TriggerClientEvent("redem_roleplay:NotifyLeft", src, getlang("permission", "title"), getlang("permission", "message"), "generic_textures", "tick", 3000)
+        return
+    end
+    addPlayerSeasonPass(src)
+end)
+
+-- @description Adds XP to the player's battle pass
+-- @command /addXP [amount]
+-- @param source number The source ID of the player executing the command
+-- @param args table Command arguments - args[2] optional XP amount (defaults to 1)
+-- @param rawCommand string The raw command string (not used)
+RegisterCommand("addXP", function(source, args, rawCommand)
+    local src = tonumber(args[2]) or source    
+     if not hasPermission(src, "givepass") then
+        TriggerClientEvent("redem_roleplay:NotifyLeft", src, getlang("permission", "title"), getlang("permission", "message"), "generic_textures", "tick", 3000)
+        return
+    end
+    local earnedXP = tonumber(args[1]) or 1
+    addPlayerPassXP(src, earnedXP)
+end)
+
+-- @description Sets the player's battle pass rank to specified value
+-- @command /setrank [rank]
+-- @param source number The source ID of the player executing the command
+-- @param args table Command arguments - args[2] optional rank number (defaults to 1)
+-- @param rawCommand string The raw command string (not used)
+RegisterCommand("setrank", function(source, args, rawCommand)
+    local src = tonumber(args[2]) or source
+    if not hasPermission(src, "givepass") then
+        TriggerClientEvent("redem_roleplay:NotifyLeft", src, getlang("permission", "title"), getlang("permission", "message"), "generic_textures", "tick", 3000)
+        return
+    end
+    local rank = tonumber(args[1]) or 1
+    setPlayerPassRank(src, rank)
+end)
+
+-- @description Shows battle pass admin interface for a player
+-- @command /showBattlePassAdmin [playerID]
+-- @param source number The source ID of the player executing the command
+-- @param args table Command arguments - args[1] optional target player ID
+-- @param raw string The raw command string (not used)
+RegisterCommand("showBattlePassAdmin", function(source,args,raw)
+    local src = tonumber(args[1]) or source
+    if not hasPermission(src, "checkpass") then
+        TriggerClientEvent("redem_roleplay:NotifyLeft", src, getlang("permission", "title"), getlang("permission", "message"), "generic_textures", "tick", 3000)
+        return
+    end
+    TriggerEvent('qadr_pass:requestData',src)
+end, true)
+
+-- @description Sends the active battle pass data to the client
+-- @command /setBattlePassToClient [playerID]
+-- @param source number The source ID of the player executing the command
+-- @param args table Command arguments - args[1] optional target player ID
+-- @param rawCommand string The raw command string (not used)
+RegisterCommand('setBattlePassToClient', function(source, args, rawCommand)
+    local src = tonumber(args[1]) or source
+    if not hasPermission(src, "addpass") then
+        TriggerClientEvent("redem_roleplay:NotifyLeft", src, getlang("permission", "title"), getlang("permission", "message"), "generic_textures", "tick", 3000)
+        return
+    end
+    TriggerEvent("qadr_pass:getActiveBattlePass", src) 
 end)
